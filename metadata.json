@@ -1,0 +1,6 @@
+{
+  "name": "Realm: AI Story Chat & RPG",
+  "description": "Интерактивный стори чат с многопользовательскими мирами, ветвящимся сюжетом, генерацией нейрокартинок, локальным Gemma/Gemini ИИ и редактором сценариев.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

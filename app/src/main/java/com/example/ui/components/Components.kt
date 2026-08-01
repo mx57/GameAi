@@ -1,0 +1,505 @@
+package com.example.ui.components
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.SubcomposeAsyncImage
+import com.example.data.model.World
+import com.example.data.model.WorldGenre
+import com.example.ui.theme.*
+import kotlinx.coroutines.delay
+
+@Composable
+fun FantasyHeaderTitle(
+    text: String,
+    modifier: Modifier = Modifier,
+    fontSize: Int = 32
+) {
+    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        // Shadow text layer
+        Text(
+            text = text,
+            fontSize = fontSize.sp,
+            fontFamily = FontFamily.Serif,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black.copy(alpha = 0.8f),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.offset(y = 2.dp, x = 1.dp)
+        )
+        // Foreground styled text layer
+        Text(
+            text = text,
+            fontSize = fontSize.sp,
+            fontFamily = FontFamily.Serif,
+            fontWeight = FontWeight.Bold,
+            color = FantasyGoldLight,
+            textAlign = TextAlign.Center,
+            style = TextStyle(
+                shadow = Shadow(
+                    color = Color(0xFF8B5A2B),
+                    blurRadius = 8f
+                )
+            )
+        )
+    }
+}
+
+@Composable
+fun FantasyPillButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    badgeText: String? = null
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        shape = RoundedCornerShape(24.dp),
+        color = FantasyWoodBrown,
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, FantasyGold)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = text,
+                fontSize = 15.sp,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Bold,
+                color = FantasyGoldLight,
+                textAlign = TextAlign.Center
+            )
+            if (badgeText != null) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = FantasyGold
+                ) {
+                    Text(
+                        text = badgeText,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = FantasyWoodBrown,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FantasyStoryPosterCard(
+    world: World,
+    statsCount: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val imageUrl = remember(world.id, world.genre) {
+        when (world.id) {
+            "oasis_1" -> "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80"
+            "world_echo" -> "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=600&q=80"
+            "sovereign_1" -> "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&q=80"
+            "academy_magic" -> "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&q=80"
+            "dragon_lair" -> "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80"
+            "cyber_1", "cyber_2", "cyber_3" -> "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=80"
+            "scifi_1", "scifi_2" -> "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&q=80"
+            "detective_1", "detective_2" -> "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&q=80"
+            "postapoc_1", "postapoc_2" -> "https://images.unsplash.com/photo-1509281373149-e957c6296406?w=600&q=80"
+            else -> {
+                when (world.genre) {
+                    WorldGenre.CYBERPUNK -> "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80"
+                    WorldGenre.DARK_FANTASY -> "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80"
+                    WorldGenre.SCI_FI -> "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&q=80"
+                    WorldGenre.DETECTIVE -> "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&q=80"
+                    WorldGenre.POST_APOCALYPSE -> "https://images.unsplash.com/photo-1509281373149-e957c6296406?w=600&q=80"
+                }
+            }
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .width(145.dp)
+            .height(210.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
+            .border(1.5.dp, FantasyGold.copy(alpha = 0.8f), RoundedCornerShape(16.dp))
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF2A1E17),
+                        Color(0xFF1E1815),
+                        Color(0xFF0F0B09)
+                    )
+                )
+            )
+            .testTag("story_poster_${world.id}")
+    ) {
+        // High quality cover image loaded via Coil
+        SubcomposeAsyncImage(
+            model = imageUrl,
+            contentDescription = world.title,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+            loading = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(FantasySurfaceVariant, FantasyDarkCanvas)
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = FantasyGold,
+                        strokeWidth = 2.dp
+                    )
+                }
+            },
+            error = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    when (world.genre) {
+                                        WorldGenre.CYBERPUNK -> Color(0xFF381E72)
+                                        WorldGenre.DARK_FANTASY -> Color(0xFF1B3B2B)
+                                        WorldGenre.SCI_FI -> Color(0xFF1E3A5F)
+                                        else -> Color(0xFF4A1A1A)
+                                    }.copy(alpha = 0.8f),
+                                    Color(0xFF0F0B09)
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = when(world.genre) {
+                            WorldGenre.CYBERPUNK -> "🌆"
+                            WorldGenre.DARK_FANTASY -> "🕯️"
+                            WorldGenre.SCI_FI -> "🚀"
+                            WorldGenre.DETECTIVE -> "🔍"
+                            WorldGenre.POST_APOCALYPSE -> "☣️"
+                        },
+                        fontSize = 32.sp
+                    )
+                }
+            }
+        )
+
+        // Top Gradient Shadow Overlay
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.Black.copy(alpha = 0.65f), Color.Transparent)
+                    )
+                )
+        )
+
+        // Top Left Stat Badge (📊 10 / 210)
+        Surface(
+            shape = RoundedCornerShape(bottomEnd = 10.dp, topStart = 14.dp),
+            color = Color.Black.copy(alpha = 0.75f),
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "📊 $statsCount",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+        }
+
+        // Bottom Gradient Overlay & Title
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.75f),
+                            Color.Black.copy(alpha = 0.95f)
+                        )
+                    )
+                )
+                .padding(10.dp)
+        ) {
+            Text(
+                text = world.title,
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = TextStyle(
+                    shadow = Shadow(color = Color.Black, blurRadius = 6f)
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun FantasySectionHeader(
+    title: String,
+    onViewAllClick: (() -> Unit)? = null
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("☘️", fontSize = 18.sp)
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = title,
+                fontSize = 20.sp,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Bold,
+                color = FantasyGoldLight,
+                style = TextStyle(
+                    shadow = Shadow(color = Color(0xFF3E2723), blurRadius = 4f)
+                )
+            )
+        }
+
+        if (onViewAllClick != null) {
+            Text(
+                text = "Посмотреть все",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = FantasyGold,
+                modifier = Modifier.clickable(onClick = onViewAllClick)
+            )
+        }
+    }
+}
+
+@Composable
+fun DarkGlassCard(
+    modifier: Modifier = Modifier,
+    borderColor: Color = FantasyGold.copy(alpha = 0.5f),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        FantasySurfaceVariant.copy(alpha = 0.95f),
+                        FantasySurface.copy(alpha = 0.98f)
+                    )
+                )
+            )
+            .border(
+                width = 1.dp,
+                brush = Brush.linearGradient(
+                    colors = listOf(borderColor, Color.Transparent, borderColor.copy(alpha = 0.3f))
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Column {
+            content()
+        }
+    }
+}
+
+@Composable
+fun RpgStatBar(
+    label: String,
+    currentValue: Int,
+    maxValue: Int,
+    barColor: Color,
+    modifier: Modifier = Modifier
+) {
+    val progress = (currentValue.toFloat() / maxValue.toFloat()).coerceIn(0f, 1f)
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
+        label = "stat_anim"
+    )
+
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = label,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextSecondary
+            )
+            Text(
+                text = "$currentValue / $maxValue",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(Color.White.copy(alpha = 0.1f))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(animatedProgress)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(barColor)
+            )
+        }
+    }
+}
+
+@Composable
+fun ChoiceChip(
+    text: String,
+    statCheck: String?,
+    riskLevel: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    testTagId: String = "choice_chip"
+) {
+    val riskColor = when (riskLevel) {
+        "Высокий" -> DangerRed
+        "Смертельный" -> DangerRed
+        "Низкий" -> SuccessGreen
+        else -> FantasyGold
+    }
+
+    Surface(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .testTag(testTagId),
+        shape = RoundedCornerShape(12.dp),
+        color = FantasySurfaceVariant,
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            Brush.horizontalGradient(listOf(riskColor.copy(alpha = 0.8f), FantasyGold.copy(alpha = 0.4f)))
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = text,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = TextPrimary
+                )
+                if (statCheck != null) {
+                    Text(
+                        text = "⚡ Требование: $statCheck",
+                        fontSize = 11.sp,
+                        color = FantasyGoldLight,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Surface(
+                shape = RoundedCornerShape(6.dp),
+                color = riskColor.copy(alpha = 0.2f)
+            ) {
+                Text(
+                    text = riskLevel,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = riskColor,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AnimatedTypewriterText(
+    fullText: String,
+    modifier: Modifier = Modifier,
+    textColor: Color = TextPrimary,
+    fontSize: Float = 15f
+) {
+    var displayedText by remember(fullText) { mutableStateOf("") }
+
+    LaunchedEffect(fullText) {
+        displayedText = ""
+        for (i in 1..fullText.length) {
+            displayedText = fullText.substring(0, i)
+            delay(12)
+        }
+    }
+
+    Text(
+        text = displayedText,
+        modifier = modifier,
+        color = textColor,
+        fontSize = fontSize.sp,
+        lineHeight = (fontSize * 1.4f).sp
+    )
+}
