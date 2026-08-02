@@ -483,13 +483,15 @@ class StoryRepository(
             choicesJsonArray.put(obj)
         }
 
+        val eventImageUrl = getEventImageUrl(world.genre, aiResponse.imagePrompt ?: world.defaultImagePrompt, currentMessages.size)
+
         val aiMsgEntity = ChatMessageEntity(
             storyId = storyId,
             sender = "CHARACTER",
             senderName = world.primaryCharacterName,
             text = aiResponse.storyText,
             choicesJson = choicesJsonArray.toString(),
-            imageUrl = aiResponse.imagePrompt,
+            imageUrl = eventImageUrl,
             statChanges = aiResponse.statChanges
         )
         chatDao.insertMessage(aiMsgEntity)
@@ -513,13 +515,14 @@ class StoryRepository(
             choicesJsonArray.put(obj)
         }
 
+        val initialImageUrl = getEventImageUrl(world.genre, world.defaultImagePrompt, 0)
         val initialMsg = ChatMessageEntity(
             storyId = world.id,
             sender = "CHARACTER",
             senderName = world.primaryCharacterName,
             text = world.initialMessage,
             choicesJson = choicesJsonArray.toString(),
-            imageUrl = world.defaultImagePrompt,
+            imageUrl = initialImageUrl,
             statChanges = "История началась! +100 XP"
         )
         chatDao.insertMessage(initialMsg)
@@ -653,5 +656,67 @@ class StoryRepository(
             credsOrGold = credsOrGold,
             inventory = inventoryJson.split(",").map { it.trim() }.filter { it.isNotEmpty() }
         )
+    }
+
+    private fun getEventImageUrl(genre: WorldGenre, prompt: String, seed: Int): String {
+        val lower = prompt.lowercase()
+        return when {
+            lower.contains("cyber") || lower.contains("neon") || lower.contains("matrix") || lower.contains("hacker") || lower.contains("city") -> {
+                listOf(
+                    "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80",
+                    "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80",
+                    "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&q=80",
+                    "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80"
+                )[seed % 4]
+            }
+            lower.contains("space") || lower.contains("star") || lower.contains("planet") || lower.contains("ship") || lower.contains("mars") || lower.contains("wormhole") -> {
+                listOf(
+                    "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80",
+                    "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=800&q=80",
+                    "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800&q=80",
+                    "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800&q=80"
+                )[seed % 4]
+            }
+            lower.contains("detective") || lower.contains("noir") || lower.contains("train") || lower.contains("fog") || lower.contains("investigat") -> {
+                listOf(
+                    "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&q=80",
+                    "https://images.unsplash.com/photo-1515260268569-9271009adfdb?w=800&q=80",
+                    "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
+                    "https://images.unsplash.com/photo-1453945620805-07530e047714?w=800&q=80"
+                )[seed % 4]
+            }
+            lower.contains("wasteland") || lower.contains("mech") || lower.contains("apocalyp") || lower.contains("ruin") || lower.contains("desert") -> {
+                listOf(
+                    "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800&q=80",
+                    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&q=80",
+                    "https://images.unsplash.com/photo-1509281373149-e957c6296406?w=800&q=80",
+                    "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80"
+                )[seed % 4]
+            }
+            else -> {
+                when (genre) {
+                    WorldGenre.CYBERPUNK -> listOf(
+                        "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80",
+                        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80"
+                    )[seed % 2]
+                    WorldGenre.DARK_FANTASY -> listOf(
+                        "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80",
+                        "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&q=80"
+                    )[seed % 2]
+                    WorldGenre.SCI_FI -> listOf(
+                        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80",
+                        "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&q=80"
+                    )[seed % 2]
+                    WorldGenre.DETECTIVE -> listOf(
+                        "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&q=80",
+                        "https://images.unsplash.com/photo-1453945620805-07530e047714?w=800&q=80"
+                    )[seed % 2]
+                    WorldGenre.POST_APOCALYPSE -> listOf(
+                        "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800&q=80",
+                        "https://images.unsplash.com/photo-1509281373149-e957c6296406?w=800&q=80"
+                    )[seed % 2]
+                }
+            }
+        }
     }
 }

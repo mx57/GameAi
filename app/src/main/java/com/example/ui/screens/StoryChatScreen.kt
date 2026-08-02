@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.SubcomposeAsyncImage
 import com.example.data.model.*
 import com.example.ui.components.AnimatedTypewriterText
 import com.example.ui.components.ChoiceChip
@@ -532,19 +534,71 @@ fun StoryTurnMessageRow(
                     )
                     .padding(12.dp)
             ) {
-                if (isUser) {
-                    Text(
-                        text = message.text,
-                        fontSize = 14.sp,
-                        color = TextPrimary,
-                        fontWeight = FontWeight.Medium
-                    )
-                } else {
-                    AnimatedTypewriterText(
-                        fullText = message.text,
-                        textColor = TextPrimary,
-                        fontSize = 14f
-                    )
+                Column {
+                    if (!isUser && !message.imageUrl.isNullOrBlank()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(160.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .border(1.dp, FantasyGold.copy(alpha = 0.6f), RoundedCornerShape(10.dp))
+                        ) {
+                            SubcomposeAsyncImage(
+                                model = message.imageUrl,
+                                contentDescription = "Иллюстрация события",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize(),
+                                loading = {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize().background(DarkCanvas),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(24.dp),
+                                            color = FantasyGold,
+                                            strokeWidth = 2.dp
+                                        )
+                                    }
+                                }
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                                    .align(Alignment.BottomCenter)
+                                    .background(
+                                        Brush.verticalGradient(
+                                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
+                                        )
+                                    )
+                            )
+                            Text(
+                                text = "🖼️ Кадр События • ИИ Иллюстрация",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = FantasyGoldLight,
+                                modifier = Modifier
+                                    .align(Alignment.BottomStart)
+                                    .padding(8.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+
+                    if (isUser) {
+                        Text(
+                            text = message.text,
+                            fontSize = 14.sp,
+                            color = TextPrimary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    } else {
+                        AnimatedTypewriterText(
+                            fullText = message.text,
+                            textColor = TextPrimary,
+                            fontSize = 14f
+                        )
+                    }
                 }
             }
         }
