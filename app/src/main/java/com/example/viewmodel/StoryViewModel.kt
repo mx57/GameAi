@@ -198,6 +198,10 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
         _userProfile.value = _userProfile.value.copy(offlineGemmaMode = enabled)
     }
 
+    fun toggleMatureContent(enabled: Boolean) {
+        _userProfile.value = _userProfile.value.copy(allowMatureContent = enabled)
+    }
+
     fun toggleAmbientAudio() {
         val newStatus = !_userProfile.value.isAmbientAudioEnabled
         _userProfile.value = _userProfile.value.copy(isAmbientAudioEnabled = newStatus)

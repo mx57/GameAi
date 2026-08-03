@@ -255,10 +255,12 @@ fun StoryChatScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
-                    items(messages) { msg ->
+                    items(messages.size) { index ->
+                        val msg = messages[index]
                         StoryTurnMessageRow(
                             message = msg,
-                            turnIndex = messages.indexOf(msg) + 1,
+                            turnIndex = index + 1,
+                            isLastMessage = index == messages.size - 1,
                             onAvatarClick = { showCharacterSheet = true }
                         )
                     }
@@ -450,6 +452,7 @@ fun StoryChatScreen(
 fun StoryTurnMessageRow(
     message: StoryMessage,
     turnIndex: Int,
+    isLastMessage: Boolean,
     onAvatarClick: () -> Unit
 ) {
     val isUser = message.sender == "USER"
@@ -543,7 +546,8 @@ fun StoryTurnMessageRow(
                     AnimatedTypewriterText(
                         fullText = message.text,
                         textColor = TextPrimary,
-                        fontSize = 14f
+                        fontSize = 14f,
+                        isAnimated = isLastMessage
                     )
                 }
             }

@@ -535,16 +535,20 @@ fun AnimatedTypewriterText(
     fullText: String,
     modifier: Modifier = Modifier,
     textColor: Color = TextPrimary,
-    fontSize: Float = 15f
+    fontSize: Float = 15f,
+    isAnimated: Boolean = true
 ) {
     val annotatedString = remember(fullText) { parseMarkdown(fullText) }
-    var displayedLength by remember(annotatedString) { mutableStateOf(0) }
+    var displayedLength by remember(annotatedString, isAnimated) {
+        mutableStateOf(if (isAnimated) 0 else annotatedString.length)
+    }
 
-    LaunchedEffect(annotatedString) {
-        displayedLength = 0
-        for (i in 1..annotatedString.length) {
-            displayedLength = i
-            delay(12)
+    LaunchedEffect(annotatedString, isAnimated) {
+        if (isAnimated && displayedLength < annotatedString.length) {
+            for (i in (displayedLength + 1)..annotatedString.length) {
+                displayedLength = i
+                delay(12)
+            }
         }
     }
 
