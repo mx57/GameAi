@@ -30,7 +30,7 @@ class StoryRepository(
 
     suspend fun initializeDefaultDataIfEmpty() {
         val existingStories = storyDao.getAllStories().first()
-        if (existingStories.size < 25) {
+        if (existingStories.size < 30) {
             val defaultStories = listOf(
                 // --- DARK FANTASY & MAGIC ---
                 StoryEntity(
@@ -376,6 +376,64 @@ class StoryRepository(
                     initialChoicesJson = "Залезть в кабину титана,Извлечь плазменный реактор,Защитить находку",
                     defaultImagePrompt = "Giant rusted fallen mech robot in desert sand under stormy sky",
                     isCustom = false
+                ),
+
+                // --- 18+ ADULT & SENSUAL ROMANCE ---
+                StoryEntity(
+                    id = "adult_neon_desire",
+                    title = "Соблазн в Неоновом Клубе 'Эдем'",
+                    genreName = WorldGenre.ADULT_18.name,
+                    description = "Закрытый VIP-клуб на вершине небоскреба. Здесь желания материализуются, а запретная страсть правит балом.",
+                    loreSummary = "Элитный клуб для тех, кто ищет чувственных наслаждений и опасных интриг.",
+                    specialMechanicName = "Шкала Страсти",
+                    primaryCharacterName = "Кармен",
+                    primaryCharacterRole = "Хозяйка Ночи",
+                    initialMessage = "— Добро пожаловать за наш закрытый столик, красавчик. Готов испытать искушение?",
+                    initialChoicesJson = "Пригласить на танец,Предложить бокал элитного вина,Шепнуть на ухо интимную тайну",
+                    defaultImagePrompt = "Sensual neon lit luxury lounge intimate atmosphere moody lighting red and purple",
+                    isCustom = false
+                ),
+                StoryEntity(
+                    id = "adult_royal_boudior",
+                    title = "Тайный Будуар Императрицы",
+                    genreName = WorldGenre.ADULT_18.name,
+                    description = "Роскошный замок, шелковые простыни, пригканный свет свечей и опасные дворцовые интриги с оттенком страсти.",
+                    loreSummary = "Ночные тайны императорского двора скрывают самые пикантные секреты.",
+                    specialMechanicName = "Индекс Соблазнения",
+                    primaryCharacterName = "Императрица Изабелла",
+                    primaryCharacterRole = "Владелица Сердец",
+                    initialMessage = "— Охрана свободна... Подойди ближе к трону, мой дерзкий гость.",
+                    initialChoicesJson = "Поцеловать руку императрицы,Сделать дерзкий комплимент,Закрыть тяжелые портьеры",
+                    defaultImagePrompt = "Luxurious candlelit royal boudoir with velvet and silk romantic intimate lighting",
+                    isCustom = false
+                ),
+                StoryEntity(
+                    id = "adult_cyber_pleasure",
+                    title = "Нейро-Эротика: Скрытый Слой Сети",
+                    genreName = WorldGenre.ADULT_18.name,
+                    description = "Виртуальный мир чувственных наслаждений и полной цифровой свободы без цензуры.",
+                    loreSummary = "Симуляция страсти в глубинах цифрового подполья.",
+                    specialMechanicName = "Синхронизация Чувств",
+                    primaryCharacterName = "Андроид Кира",
+                    primaryCharacterRole = "Гид по Желаниям",
+                    initialMessage = "— Нейро-интерфейс активирован на максимум. Что пробудит твое воображение сегодня?",
+                    initialChoicesJson = "Запустить протокол соблазна,Исследовать запретные зоны памяти,Снять виртуальную маску",
+                    defaultImagePrompt = "Cyberpunk sensual neon holographic artistic portrait intimate moody lighting",
+                    isCustom = false
+                ),
+                StoryEntity(
+                    id = "adult_midnight_noir",
+                    title = "Полночный Нуар: Греховное Рандеву",
+                    genreName = WorldGenre.ADULT_18.name,
+                    description = "Дождливая ночь, неоновые вывески отеля, чарующая незнакомка в вечернем платье и опасные тайны.",
+                    loreSummary = "Частная встреча в номер люкс оборачивается страстным романом.",
+                    specialMechanicName = "Градус Напряжения",
+                    primaryCharacterName = "Незнакомка в Красном",
+                    primaryCharacterRole = "Роковая Женщина",
+                    initialMessage = "— Ты опоздал на десять минут, детектив. Но ночь только начинается...",
+                    initialChoicesJson = "Закрыть дверь на замок,Обнять за талию,Налить два бокала виски",
+                    defaultImagePrompt = "Noir rain outside window luxury hotel room silhouette sensual atmosphere",
+                    isCustom = false
                 )
             )
             storyDao.insertStories(defaultStories)
@@ -693,6 +751,14 @@ class StoryRepository(
                     "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80"
                 )[seed % 4]
             }
+            lower.contains("sensual") || lower.contains("romance") || lower.contains("boudoir") || lower.contains("desire") || lower.contains("lust") || lower.contains("passion") || lower.contains("erotic") || lower.contains("intimate") || lower.contains("neon lit") -> {
+                listOf(
+                    "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800&q=80",
+                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80",
+                    "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=800&q=80",
+                    "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&q=80"
+                )[seed % 4]
+            }
             else -> {
                 when (genre) {
                     WorldGenre.CYBERPUNK -> listOf(
@@ -714,6 +780,10 @@ class StoryRepository(
                     WorldGenre.POST_APOCALYPSE -> listOf(
                         "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800&q=80",
                         "https://images.unsplash.com/photo-1509281373149-e957c6296406?w=800&q=80"
+                    )[seed % 2]
+                    WorldGenre.ADULT_18 -> listOf(
+                        "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=800&q=80",
+                        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80"
                     )[seed % 2]
                 }
             }

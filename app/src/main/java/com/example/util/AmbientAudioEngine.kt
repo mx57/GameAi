@@ -150,6 +150,7 @@ object AmbientAudioEngine {
             WorldGenre.SCI_FI -> AmbientPreset.SCI_FI
             WorldGenre.DETECTIVE -> AmbientPreset.DETECTIVE
             WorldGenre.POST_APOCALYPSE -> AmbientPreset.POST_APOCALYPSE
+            WorldGenre.ADULT_18 -> AmbientPreset.DARK_FANTASY
         }
         if (isPlaying && newPreset != currentPreset) {
             startAmbient(newPreset)

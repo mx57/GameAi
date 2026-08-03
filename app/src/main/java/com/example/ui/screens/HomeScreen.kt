@@ -217,6 +217,7 @@ fun HomeScreen(
                         WorldGenre.SCI_FI -> "🚀"
                         WorldGenre.DETECTIVE -> "🔍"
                         WorldGenre.POST_APOCALYPSE -> "☣️"
+                        WorldGenre.ADULT_18 -> "🔥"
                     }
                     FilterChip(
                         selected = isSelected,

@@ -7,7 +7,8 @@ enum class WorldGenre(val titleRu: String, val iconName: String) {
     DARK_FANTASY("Тёмное Фэнтези", "auto_awesome"),
     SCI_FI("Космическая Одиссея", "rocket_launch"),
     DETECTIVE("Нуар Детектив", "search"),
-    POST_APOCALYPSE("Постапокалипсис", "shield_moon")
+    POST_APOCALYPSE("Постапокалипсис", "shield_moon"),
+    ADULT_18("18+ Эротика & Соблазн", "favorite")
 }
 
 data class RpgStats(

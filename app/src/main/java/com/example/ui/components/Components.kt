@@ -22,12 +22,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -163,6 +158,7 @@ fun FantasyStoryPosterCard(
                     WorldGenre.SCI_FI -> "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&q=80"
                     WorldGenre.DETECTIVE -> "https://images.unsplash.com/photo-1453945620805-07530e047714?w=600&q=80"
                     WorldGenre.POST_APOCALYPSE -> "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80"
+                    WorldGenre.ADULT_18 -> "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&q=80"
                 }
             }
         }
@@ -236,6 +232,7 @@ fun FantasyStoryPosterCard(
                             WorldGenre.SCI_FI -> "🚀"
                             WorldGenre.DETECTIVE -> "🔍"
                             WorldGenre.POST_APOCALYPSE -> "☣️"
+                            WorldGenre.ADULT_18 -> "🔥"
                         },
                         fontSize = 32.sp
                     )
@@ -498,53 +495,6 @@ fun ChoiceChip(
     }
 }
 
-fun parseMarkdown(text: String, highlightColor: Color = FantasyGoldLight): AnnotatedString {
-    return buildAnnotatedString {
-        var currentIndex = 0
-        while (currentIndex < text.length) {
-            val boldStart = text.indexOf("**", currentIndex)
-            val italicStart = text.indexOf("*", currentIndex)
-
-            val nextTokenIndex = listOf(
-                if (boldStart != -1) boldStart else Int.MAX_VALUE,
-                if (italicStart != -1 && italicStart != boldStart && (boldStart == -1 || italicStart < boldStart)) italicStart else Int.MAX_VALUE
-            ).minOrNull() ?: Int.MAX_VALUE
-
-            if (nextTokenIndex == Int.MAX_VALUE) {
-                append(text.substring(currentIndex))
-                break
-            }
-
-            append(text.substring(currentIndex, nextTokenIndex))
-            currentIndex = nextTokenIndex
-
-            if (currentIndex == boldStart) {
-                val boldEnd = text.indexOf("**", currentIndex + 2)
-                if (boldEnd != -1) {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = highlightColor)) {
-                        append(text.substring(currentIndex + 2, boldEnd))
-                    }
-                    currentIndex = boldEnd + 2
-                } else {
-                    append("**")
-                    currentIndex += 2
-                }
-            } else if (currentIndex == italicStart) {
-                val italicEnd = text.indexOf("*", currentIndex + 1)
-                if (italicEnd != -1) {
-                    withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
-                        append(text.substring(currentIndex + 1, italicEnd))
-                    }
-                    currentIndex = italicEnd + 1
-                } else {
-                    append("*")
-                    currentIndex += 1
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun AnimatedTypewriterText(
     fullText: String,
@@ -552,19 +502,18 @@ fun AnimatedTypewriterText(
     textColor: Color = TextPrimary,
     fontSize: Float = 15f
 ) {
-    val annotatedString = remember(fullText) { parseMarkdown(fullText) }
-    var displayedLength by remember(annotatedString) { mutableStateOf(0) }
+    var displayedText by remember(fullText) { mutableStateOf("") }
 
-    LaunchedEffect(annotatedString) {
-        displayedLength = 0
-        for (i in 1..annotatedString.length) {
-            displayedLength = i
+    LaunchedEffect(fullText) {
+        displayedText = ""
+        for (i in 1..fullText.length) {
+            displayedText = fullText.substring(0, i)
             delay(12)
         }
     }
 
     Text(
-        text = annotatedString.subSequence(0, displayedLength),
+        text = displayedText,
         modifier = modifier,
         color = textColor,
         fontSize = fontSize.sp,
