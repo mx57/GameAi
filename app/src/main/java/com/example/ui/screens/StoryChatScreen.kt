@@ -59,7 +59,7 @@ fun StoryChatScreen(
     var showAmbientSheet by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var customResponseText by remember { mutableStateOf("") }
-    var areChoicesExpanded by remember { mutableStateOf(true) }
+    var areChoicesExpanded by remember { mutableStateOf(false) }
 
     // Auto scroll to last message
     LaunchedEffect(messages.size) {
@@ -257,7 +257,7 @@ fun StoryChatScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
-                    items(messages) { msg ->
+                    items(messages, key = { it.timestamp.toString() + it.sender + it.text.hashCode() }) { msg ->
                         StoryTurnMessageRow(
                             message = msg,
                             turnIndex = messages.indexOf(msg) + 1,
@@ -360,7 +360,10 @@ fun StoryChatScreen(
                                         text = choice.text,
                                         statCheck = choice.statCheck,
                                         riskLevel = choice.riskLevel,
-                                        onClick = { viewModel.sendChoice(choice.text) },
+                                        onClick = { 
+                                            areChoicesExpanded = false
+                                            viewModel.sendChoice(choice.text) 
+                                        },
                                         testTagId = "choice_option_$index"
                                     )
                                 }
@@ -397,6 +400,7 @@ fun StoryChatScreen(
                                 if (customResponseText.isNotBlank()) {
                                     val text = customResponseText
                                     customResponseText = ""
+                                    areChoicesExpanded = false
                                     viewModel.sendChoice(text)
                                 }
                             },

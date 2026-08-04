@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -502,13 +503,17 @@ fun AnimatedTypewriterText(
     textColor: Color = TextPrimary,
     fontSize: Float = 15f
 ) {
-    var displayedText by remember(fullText) { mutableStateOf("") }
+    var hasAnimated by rememberSaveable(fullText) { mutableStateOf(false) }
+    var displayedText by remember(fullText) { mutableStateOf(if (hasAnimated) fullText else "") }
 
     LaunchedEffect(fullText) {
-        displayedText = ""
-        for (i in 1..fullText.length) {
-            displayedText = fullText.substring(0, i)
-            delay(12)
+        if (!hasAnimated) {
+            displayedText = ""
+            for (i in 1..fullText.length) {
+                displayedText = fullText.substring(0, i)
+                delay(12)
+            }
+            hasAnimated = true
         }
     }
 
