@@ -478,7 +478,8 @@ class StoryRepository(
         storyId: String,
         userMessage: String,
         world: World,
-        isOfflineMode: Boolean
+        isOfflineMode: Boolean,
+        useHuggingFace: Boolean = false
     ): StoryMessage {
         val currentMessages = chatDao.getMessagesForStory(storyId).first()
         val historyPairs = currentMessages.map { it.sender to it.text }
@@ -506,7 +507,8 @@ class StoryRepository(
             rpgStats = currentStats,
             userMessage = userMessage,
             chatHistory = historyPairs,
-            isOfflineMode = isOfflineMode
+            isOfflineMode = isOfflineMode,
+            useHuggingFace = useHuggingFace
         )
 
         // Update stats with gained XP

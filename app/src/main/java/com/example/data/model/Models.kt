@@ -4,11 +4,11 @@ import androidx.compose.ui.graphics.Color
 
 enum class WorldGenre(val titleRu: String, val iconName: String) {
     CYBERPUNK("Киберпанк 2088", "memory"),
-    DARK_FANTASY("Тёмное Фэнтези", "auto_awesome"),
-    SCI_FI("Космическая Одиссея", "rocket_launch"),
-    DETECTIVE("Нуар Детектив", "search"),
+    DARK_FANTASY("Тёмное фэнтези", "auto_awesome"),
+    SCI_FI("Космическая одиссея", "rocket_launch"),
+    DETECTIVE("Нуар детектив", "search"),
     POST_APOCALYPSE("Постапокалипсис", "shield_moon"),
-    ADULT_18("18+ Эротика & Соблазн", "favorite")
+    ADULT_18("18+ Эротика & Созлазн", "favorite")
 }
 
 data class RpgStats(
@@ -23,7 +23,7 @@ data class RpgStats(
     val combat: Int = 10,
     val luck: Int = 10,
     val credsOrGold: Int = 250,
-    val inventory: List<String> = listOf("Связи в Подполье", "Стандартный Инфо-Чип"),
+    val inventory: List<String> = listOf("Связи в Подполье", "Стандартный инфо-чип"),
     val activeBuffs: List<String> = listOf("Воля Искателя (+5% XP)")
 )
 
@@ -44,12 +44,12 @@ data class CharacterProfile(
     val title: String,
     val role: String,
     val avatarUrl: String? = null,
-    val affinityLevel: Int = 75, // 0 to 100
-    val affinityTitle: String = "Надёжный Союзник",
+    val affinityLevel: Int = 75,
+    val affinityTitle: String = "Надежный Союзник",
     val level: Int = 3,
     val availableSkillPoints: Int = 2,
-    val bio: String = "Опытный проводник по изнанке мира. Всегда находит лазейки там, где остальные видят глухую стену.",
-    val quote: String = "«Доверяй своим протоколам, но держи пальцы на спуске.»",
+    val bio: String = "Опытный проводник по изнанке мира. Всегда находит лазейки там, где другие видят только стены.",
+    val quote: String = "\u00abДоверяй только протоколам, но проверяй их сам.\u00bb",
     val skills: List<CharacterSkill> = emptyList()
 )
 
@@ -73,14 +73,14 @@ data class World(
 data class StoryChoice(
     val id: String,
     val text: String,
-    val statCheck: String? = null, // e.g. "Харизма >= 12"
-    val riskLevel: String = "Обычный" // "Низкий", "Обычный", "Высокий", "Смертельный"
+    val statCheck: String? = null,
+    val riskLevel: String = "Обычный"
 )
 
 data class StoryMessage(
     val id: Long = 0,
     val storyId: String,
-    val sender: String, // "CHARACTER", "USER", "SYSTEM", "NARRATOR"
+    val sender: String,
     val senderName: String,
     val text: String,
     val choices: List<StoryChoice> = emptyList(),
@@ -96,8 +96,8 @@ enum class ImageResolution(val label: String, val pixels: String) {
 }
 
 data class UserProfile(
-    val name: String = "Искатель Судеб",
-    val title: String = "Мастер Реальностей",
+    val name: String = "Искатель Судьбы",
+    val title: String = "Мастер Реальности",
     val level: Int = 12,
     val currentXp: Int = 2840,
     val nextLevelXp: Int = 3500,
@@ -105,8 +105,21 @@ data class UserProfile(
     val customScenariosCreated: Int = 3,
     val isOnline: Boolean = true,
     val offlineGemmaMode: Boolean = false,
+    val useHuggingFaceApi: Boolean = false,
     val selectedResolution: ImageResolution = ImageResolution.RES_2K,
     val isAmbientAudioEnabled: Boolean = true,
     val ambientVolume: Float = 0.35f,
     val allowMatureContent: Boolean = false
+)
+
+// GGUF Model information
+data class GgufModel(
+    val id: String,
+    val name: String,
+    val description: String,
+    val filename: String,
+    val sizeInBytes: Long,
+    val quant: String,
+    val isDownloaded: Boolean = false,
+    val localPath: String? = null
 )

@@ -184,7 +184,8 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
                     storyId = world.id,
                     userMessage = choiceText,
                     world = world,
-                    isOfflineMode = _userProfile.value.offlineGemmaMode
+                    isOfflineMode = _userProfile.value.offlineGemmaMode,
+                    useHuggingFace = _userProfile.value.useHuggingFaceApi
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -196,6 +197,10 @@ class StoryViewModel(application: Application) : AndroidViewModel(application) {
 
     fun toggleOfflineMode(enabled: Boolean) {
         _userProfile.value = _userProfile.value.copy(offlineGemmaMode = enabled)
+    }
+
+    fun toggleHuggingFaceApi(enabled: Boolean) {
+        _userProfile.value = _userProfile.value.copy(useHuggingFaceApi = enabled)
     }
 
     fun toggleMatureContent(enabled: Boolean) {

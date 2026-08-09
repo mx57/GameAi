@@ -3,6 +3,7 @@ package com.example.data.api
 import android.util.Log
 import com.example.BuildConfig
 import com.example.data.model.ImageResolution
+import com.example.data.api.HuggingFaceClient
 import com.example.data.model.RpgStats
 import com.example.data.model.StoryChoice
 import com.squareup.moshi.Moshi
@@ -44,9 +45,24 @@ class GeminiStoryClient {
         rpgStats: RpgStats,
         userMessage: String,
         chatHistory: List<Pair<String, String>>, // Sender -> Text
-        isOfflineMode: Boolean
+        isOfflineMode: Boolean,
+        useHuggingFace: Boolean = false
     ): StoryAiResponse = withContext(Dispatchers.IO) {
         val apiKey = BuildConfig.GEMINI_API_KEY.trim()
+        val hfApiKey = BuildConfig.HUGGING_FACE_API_TOKEN.trim()
+
+        if (useHuggingFace && hfApiKey.isNotEmpty() && hfApiKey != "YOUR_HUGGING_FACE_API_TOKEN") {
+            val hfClient = HuggingFaceClient()
+            return@withContext hfClient.generateStoryResponse(
+                worldTitle = worldTitle,
+                worldGenre = worldGenre,
+                loreSummary = loreSummary,
+                characterName = characterName,
+                rpgStats = rpgStats,
+                userMessage = userMessage,
+                chatHistory = chatHistory
+            )
+        }
 
         if (isOfflineMode || apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
             return@withContext generateOfflineGemmaResponse(
