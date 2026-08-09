@@ -200,6 +200,43 @@ fun SettingsScreen(viewModel: StoryViewModel) {
             }
 
             item {
+                // Mature Content Toggle (18+)
+                DarkGlassCard(borderColor = DangerRed) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Warning, contentDescription = null, tint = DangerRed)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Взрослый Контент (18+)",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextPrimary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Разрешить генерацию откровенных сцен, насилия и ненормативной лексики в сюжете.",
+                                fontSize = 11.sp,
+                                color = TextSecondary
+                            )
+                        }
+
+                        Switch(
+                            checked = userProfile.allowMatureContent,
+                            onCheckedChange = { viewModel.toggleMatureContent(it) },
+                            modifier = Modifier.testTag("mature_content_switch"),
+                            colors = SwitchDefaults.colors(checkedThumbColor = DangerRed, checkedTrackColor = DarkSurfaceVariant)
+                        )
+                    }
+                }
+            }
+
+            item {
                 // Cloud Sync Box
                 DarkGlassCard(borderColor = NeonCyan) {
                     Row(

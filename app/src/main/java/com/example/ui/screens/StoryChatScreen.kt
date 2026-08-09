@@ -25,8 +25,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.SubcomposeAsyncImage
 import com.example.data.model.*
 import com.example.ui.components.AnimatedTypewriterText
 import com.example.ui.components.ChoiceChip
@@ -59,7 +57,7 @@ fun StoryChatScreen(
     var showAmbientSheet by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var customResponseText by remember { mutableStateOf("") }
-    var areChoicesExpanded by remember { mutableStateOf(false) }
+    var areChoicesExpanded by remember { mutableStateOf(true) }
 
     // Auto scroll to last message
     LaunchedEffect(messages.size) {
@@ -257,10 +255,12 @@ fun StoryChatScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
-                    items(messages, key = { it.timestamp.toString() + it.sender + it.text.hashCode() }) { msg ->
+                    items(messages.size) { index ->
+                        val msg = messages[index]
                         StoryTurnMessageRow(
                             message = msg,
-                            turnIndex = messages.indexOf(msg) + 1,
+                            turnIndex = index + 1,
+                            isLastMessage = index == messages.size - 1,
                             onAvatarClick = { showCharacterSheet = true }
                         )
                     }
@@ -360,10 +360,7 @@ fun StoryChatScreen(
                                         text = choice.text,
                                         statCheck = choice.statCheck,
                                         riskLevel = choice.riskLevel,
-                                        onClick = { 
-                                            areChoicesExpanded = false
-                                            viewModel.sendChoice(choice.text) 
-                                        },
+                                        onClick = { viewModel.sendChoice(choice.text) },
                                         testTagId = "choice_option_$index"
                                     )
                                 }
@@ -400,7 +397,6 @@ fun StoryChatScreen(
                                 if (customResponseText.isNotBlank()) {
                                     val text = customResponseText
                                     customResponseText = ""
-                                    areChoicesExpanded = false
                                     viewModel.sendChoice(text)
                                 }
                             },
@@ -456,6 +452,7 @@ fun StoryChatScreen(
 fun StoryTurnMessageRow(
     message: StoryMessage,
     turnIndex: Int,
+    isLastMessage: Boolean,
     onAvatarClick: () -> Unit
 ) {
     val isUser = message.sender == "USER"
@@ -538,71 +535,20 @@ fun StoryTurnMessageRow(
                     )
                     .padding(12.dp)
             ) {
-                Column {
-                    if (!isUser && !message.imageUrl.isNullOrBlank()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(160.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .border(1.dp, FantasyGold.copy(alpha = 0.6f), RoundedCornerShape(10.dp))
-                        ) {
-                            SubcomposeAsyncImage(
-                                model = message.imageUrl,
-                                contentDescription = "Иллюстрация события",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
-                                loading = {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize().background(DarkCanvas),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(24.dp),
-                                            color = FantasyGold,
-                                            strokeWidth = 2.dp
-                                        )
-                                    }
-                                }
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(40.dp)
-                                    .align(Alignment.BottomCenter)
-                                    .background(
-                                        Brush.verticalGradient(
-                                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
-                                        )
-                                    )
-                            )
-                            Text(
-                                text = "🖼️ Кадр События • ИИ Иллюстрация",
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = FantasyGoldLight,
-                                modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                                    .padding(8.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
-
-                    if (isUser) {
-                        Text(
-                            text = message.text,
-                            fontSize = 14.sp,
-                            color = TextPrimary,
-                            fontWeight = FontWeight.Medium
-                        )
-                    } else {
-                        AnimatedTypewriterText(
-                            fullText = message.text,
-                            textColor = TextPrimary,
-                            fontSize = 14f
-                        )
-                    }
+                if (isUser) {
+                    Text(
+                        text = message.text,
+                        fontSize = 14.sp,
+                        color = TextPrimary,
+                        fontWeight = FontWeight.Medium
+                    )
+                } else {
+                    AnimatedTypewriterText(
+                        fullText = message.text,
+                        textColor = TextPrimary,
+                        fontSize = 14f,
+                        isAnimated = isLastMessage
+                    )
                 }
             }
         }

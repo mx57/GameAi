@@ -107,5 +107,6 @@ data class UserProfile(
     val offlineGemmaMode: Boolean = false,
     val selectedResolution: ImageResolution = ImageResolution.RES_2K,
     val isAmbientAudioEnabled: Boolean = true,
-    val ambientVolume: Float = 0.35f
+    val ambientVolume: Float = 0.35f,
+    val allowMatureContent: Boolean = false
 )

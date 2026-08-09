@@ -19,11 +19,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -228,12 +233,12 @@ fun FantasyStoryPosterCard(
                 ) {
                     Text(
                         text = when(world.genre) {
-                            WorldGenre.CYBERPUNK -> "🌆"
-                            WorldGenre.DARK_FANTASY -> "🕯️"
-                            WorldGenre.SCI_FI -> "🚀"
-                            WorldGenre.DETECTIVE -> "🔍"
-                            WorldGenre.POST_APOCALYPSE -> "☣️"
-                            WorldGenre.ADULT_18 -> "🔥"
+                            WorldGenre.CYBERPUNK -> "\ud83c\udf06"
+                            WorldGenre.DARK_FANTASY -> "\ud83d\udd6f\ufe0f"
+                            WorldGenre.SCI_FI -> "\ud83d\ude80"
+                            WorldGenre.DETECTIVE -> "\ud83d\udd0d"
+                            WorldGenre.POST_APOCALYPSE -> "\u2623\ufe0f"
+                            WorldGenre.ADULT_18 -> "\ud83d\udd25"
                         },
                         fontSize = 32.sp
                     )
@@ -253,7 +258,7 @@ fun FantasyStoryPosterCard(
                 )
         )
 
-        // Top Left Stat Badge (📊 10 / 210)
+        // Top Left Stat Badge (\ud83d\udcca 10 / 210)
         Surface(
             shape = RoundedCornerShape(bottomEnd = 10.dp, topStart = 14.dp),
             color = Color.Black.copy(alpha = 0.75f),
@@ -264,7 +269,7 @@ fun FantasyStoryPosterCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "📊 $statsCount",
+                    text = "\ud83d\udcca $statsCount",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -319,7 +324,7 @@ fun FantasySectionHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("☘️", fontSize = 18.sp)
+            Text("\u2618\ufe0f", fontSize = 18.sp)
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = title,
@@ -335,7 +340,7 @@ fun FantasySectionHeader(
 
         if (onViewAllClick != null) {
             Text(
-                text = "Посмотреть все",
+                text = "\u041f\u043e\u0441\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u0432\u0441\u0435",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = FantasyGold,
@@ -439,9 +444,9 @@ fun ChoiceChip(
     testTagId: String = "choice_chip"
 ) {
     val riskColor = when (riskLevel) {
-        "Высокий" -> DangerRed
-        "Смертельный" -> DangerRed
-        "Низкий" -> SuccessGreen
+        "\u0412\u044b\u0441\u043e\u043a\u0438\u0439" -> DangerRed
+        "\u0421\u043c\u0435\u0440\u0442\u0435\u043b\u044c\u043d\u044b\u0439" -> DangerRed
+        "\u041d\u0438\u0437\u043a\u0438\u0439" -> SuccessGreen
         else -> FantasyGold
     }
 
@@ -472,7 +477,7 @@ fun ChoiceChip(
                 )
                 if (statCheck != null) {
                     Text(
-                        text = "⚡ Требование: $statCheck",
+                        text = "\u26a1 \u0422\u0440\u0435\u0431\u043e\u0432\u0430\u043d\u0438\u0435: $statCheck",
                         fontSize = 11.sp,
                         color = FantasyGoldLight,
                         fontWeight = FontWeight.SemiBold
@@ -496,29 +501,73 @@ fun ChoiceChip(
     }
 }
 
+fun parseMarkdown(text: String, highlightColor: Color = FantasyGoldLight): AnnotatedString {
+    return buildAnnotatedString {
+        var currentIndex = 0
+        while (currentIndex < text.length) {
+            val boldStart = text.indexOf("**", currentIndex)
+            val italicStart = text.indexOf("*", currentIndex)
+            val nextTokenIndex = listOf(
+                if (boldStart != -1) boldStart else Int.MAX_VALUE,
+                if (italicStart != -1 && italicStart != boldStart && (boldStart == -1 || italicStart < boldStart)) italicStart else Int.MAX_VALUE
+            ).minOrNull() ?: Int.MAX_VALUE
+            if (nextTokenIndex == Int.MAX_VALUE) {
+                append(text.substring(currentIndex))
+                break
+            }
+            append(text.substring(currentIndex, nextTokenIndex))
+            currentIndex = nextTokenIndex
+            if (currentIndex == boldStart) {
+                val boldEnd = text.indexOf("**", currentIndex + 2)
+                if (boldEnd != -1) {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = highlightColor)) {
+                        append(text.substring(currentIndex + 2, boldEnd))
+                    }
+                    currentIndex = boldEnd + 2
+                } else {
+                    append("**")
+                    currentIndex += 2
+                }
+            } else if (currentIndex == italicStart) {
+                val italicEnd = text.indexOf("*", currentIndex + 1)
+                if (italicEnd != -1) {
+                    withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
+                        append(text.substring(currentIndex + 1, italicEnd))
+                    }
+                    currentIndex = italicEnd + 1
+                } else {
+                    append("*")
+                    currentIndex += 1
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun AnimatedTypewriterText(
     fullText: String,
     modifier: Modifier = Modifier,
     textColor: Color = TextPrimary,
-    fontSize: Float = 15f
+    fontSize: Float = 15f,
+    isAnimated: Boolean = true
 ) {
-    var hasAnimated by rememberSaveable(fullText) { mutableStateOf(false) }
-    var displayedText by remember(fullText) { mutableStateOf(if (hasAnimated) fullText else "") }
+    val annotatedString = remember(fullText) { parseMarkdown(fullText) }
+    var displayedLength by remember(annotatedString, isAnimated) {
+        mutableStateOf(if (isAnimated) 0 else annotatedString.length)
+    }
 
-    LaunchedEffect(fullText) {
-        if (!hasAnimated) {
-            displayedText = ""
-            for (i in 1..fullText.length) {
-                displayedText = fullText.substring(0, i)
+    LaunchedEffect(annotatedString, isAnimated) {
+        if (isAnimated && displayedLength < annotatedString.length) {
+            for (i in (displayedLength + 1)..annotatedString.length) {
+                displayedLength = i
                 delay(12)
             }
-            hasAnimated = true
         }
     }
 
     Text(
-        text = displayedText,
+        text = annotatedString.subSequence(0, displayedLength),
         modifier = modifier,
         color = textColor,
         fontSize = fontSize.sp,
