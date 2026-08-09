@@ -34,11 +34,11 @@ jobs:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
 
-    - name: Get commit messages
+    - name: Get commit info
       id: commit
       run: |
-        # Get the latest commit message
-        COMMIT_MSG=$(git log -1 --pretty=%B)
+        # Get the latest commit message (first line only, remove co-authored-by)
+        COMMIT_MSG=$(git log -1 --pretty=%B | head -1 | sed 's/Co-authored-by:.*//g' | xargs)
         echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
         
         # Get short commit hash
