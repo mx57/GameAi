@@ -33,3 +33,31 @@ jobs:
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Get commit messages
+      id: commit
+      run: |
+        # Get the latest commit message
+        COMMIT_MSG=$(git log -1 --pretty=%B)
+        echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+        
+        # Get short commit hash
+        COMMIT_HASH=$(git rev-parse --short HEAD)
+        echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      if: success() && github.ref == 'refs/heads/main'
+      with:
+        name: Release ${{ steps.commit.outputs.commit_hash }}
+        tag_name: v${{ steps.commit.outputs.commit_hash }}
+        body: |
+          ### Changes
+          ${{ steps.commit.outputs.commit_msg }}
+          
+          ### Assets
+          - Debug APK: app-debug.apk
+        files: |
+          app/build/outputs/apk/debug/app-debug.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
